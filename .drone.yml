@@ -1,0 +1,564 @@
+kind: pipeline
+type: docker
+name: Build
+
+steps:
+  - name: Build
+    image: docker:27.2.0-dind
+    environment:
+      VITE_API_URL:
+        from_secret: VITE_API_URL
+      VITE_BASE_URL:
+        from_secret: VITE_BASE_URL
+      VITE_BASE_URL_AUTH:
+        from_secret: VITE_BASE_URL_AUTH
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+    commands:
+      - rm -f .env
+      - echo VITE_API_URL=$VITE_API_URL >> .env
+      - echo VITE_BASE_URL=$VITE_BASE_URL >> .env
+      - echo VITE_BASE_URL_AUTH=$VITE_BASE_URL_AUTH >> .env
+      - cat .env
+      - docker build --cache-from=frontend:${DRONE_COMMIT_BRANCH} -t frontend:${DRONE_COMMIT_BRANCH} -f Dockerfile .
+
+services:
+  - name: dind
+    image: docker:27.1-dind
+    privileged: true
+
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+
+---
+
+kind: pipeline
+type: docker
+name: Checks
+
+# steps:
+#   - name: sonarqube
+#     image: openjdk:11
+#     environment:
+#       SONAR_TOKEN:
+#         from_secret: sonar_token
+#       SONAR_ADDR:
+#         from_secret: sonar_addr
+#     commands:
+#       - export SONAR_SCANNER_VERSION=6.0.0.4432
+#       - export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
+#       - curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
+#       - unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
+#       - export PATH=$SONAR_SCANNER_HOME/bin:$PATH
+#       - export SONAR_SCANNER_OPTS="-server"
+#       - sonar-scanner 
+#         -Dsonar.qualitygate.wait=true
+#         -Dsonar.projectKey=leds-org_leds-conectafapes-frontend-admin_2eeaa5a0-4766-4968-86a4-8a80bf00de8c 
+#         -Dsonar.sources=. 
+#         -Dsonar.host.url=$SONAR_ADDR
+#         -Dsonar.typescript.tsconfigPath=./tsconfig.json
+
+  # - name: docker-compose-build
+  #   image: docker:27.2.0-dind
+  #   privileged: true
+  #   volumes:
+  #     - name: dockersock
+  #       path: /var/run/docker.sock
+  #   commands:
+  #     - docker-compose up -d --build
+
+  # - name: docker-compose-down
+  #   image: docker:27.2.0-dind
+  #   privileged: true
+  #   volumes:
+  #     - name: dockersock
+  #       path: /var/run/docker.sock
+  #   commands:
+  #     - docker-compose down
+
+  # - name: cypress
+  #   image: cypress/included:latest
+  #   environment:
+  #     CYPRESS_baseUrl: http://192.168.211.171:8080
+  #   commands:
+  #     - npm ci
+  #     - npm run cy:run
+
+depends_on:
+  - Build
+
+---
+
+kind: pipeline
+type: docker
+name: Tests
+
+steps:
+  - name: publish-qamock 
+    image: docker:27.2.0-dind
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+    environment:
+      VITE_API_URL:
+        from_secret: VITE_API_URL
+      VITE_BASE_URL_QAMOCK:
+        from_secret: VITE_BASE_URL_QAMOCK
+      VITE_BASE_URL_AUTH_QAMOCK:
+        from_secret: VITE_BASE_URL_AUTH_QAMOCK
+      GITHUB_USERNAME:
+        from_secret: GITHUB_USERNAME
+      GITHUB_TOKEN:
+        from_secret: GHCR_TOKEN
+    commands:
+      - rm -f .env
+      - echo VITE_API_URL=$VITE_API_URL >> .env
+      - echo VITE_BASE_URL=$VITE_BASE_URL_QAMOCK >> .env
+      - echo VITE_BASE_URL_AUTH=$VITE_BASE_URL_AUTH_QAMOCK >> .env
+      - echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
+      - cat .env
+      - docker build --cache-from=ghcr.io/leds-org/leds-conectafapes-frontend-admin:qamock -t ghcr.io/leds-org/leds-conectafapes-frontend-admin:qamock -f Dockerfile .
+      - docker push ghcr.io/leds-org/leds-conectafapes-frontend-admin:qamock
+        
+  - name: deploy-qamock
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        from_secret: SERVER_HOST_QAMOCK
+      username:
+        from_secret: SERVER_USER_QAMOCK
+      key:
+        from_secret: SSH_KEY
+      port: 22
+      debug: true 
+      script:  
+        - cd /home/crepe/frontend
+        - sudo docker-compose pull frontend-admin
+        - sudo docker-compose up -d --no-deps frontend-admin
+        
+  - name: Clone Tests Repository
+    image: alpine/git
+    commands:
+      - cd /drone/src/
+      - git clone https://github.com/leds-conectafapes/leds-conectafapes-blackbox-tests.git
+      - cd leds-conectafapes-blackbox-tests
+      - git checkout pipeline
+      - cd cypress/
+
+  - name: Run E2E Tests
+    image: cypress/included:13.16.1
+    commands: 
+      - cd /drone/src/leds-conectafapes-blackbox-tests
+      - npm i
+      - npx cypress run
+  
+  - name: Post comment
+    image: node:18
+    when:
+      status:
+        - failure
+        - success
+    environment:
+      GITHUB_TOKEN:
+        from_secret: GHCR_TOKEN
+    commands:
+      - cd /drone/src/leds-conectafapes-blackbox-tests
+      - npx mochawesome-merge cypress/results/*.json -o cypress/results/results.json
+      - npm install @octokit/rest
+      - node pipeline-scripts/post-comment.js
+      
+services:
+  - name: dind
+    image: docker:27.1-dind
+    privileged: true
+
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+
+trigger:
+  event:
+    - pull_request
+  branch:
+    - test
+
+depends_on:
+  - Build
+
+---
+
+kind: pipeline
+type: docker
+name: Publish
+
+steps:
+  - name: publish-develop
+    image: docker:27.2.0-dind
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+    environment:
+      VITE_API_URL:
+        from_secret: VITE_API_URL
+      VITE_BASE_URL:
+        from_secret: VITE_BASE_URL
+      VITE_BASE_URL_AUTH:
+        from_secret: VITE_BASE_URL_AUTH
+      GITHUB_USERNAME:
+        from_secret: GITHUB_USERNAME
+      GITHUB_TOKEN:
+        from_secret: GHCR_TOKEN
+    commands:
+      - rm -f .env
+      - echo VITE_API_URL=$VITE_API_URL >> .env
+      - echo VITE_BASE_URL=$VITE_BASE_URL >> .env
+      - echo VITE_BASE_URL_AUTH=$VITE_BASE_URL_AUTH >> .env
+      - echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
+      - docker build --cache-from=ghcr.io/leds-org/leds-conectafapes-frontend-admin:${DRONE_COMMIT_BRANCH} -t ghcr.io/leds-org/leds-conectafapes-frontend-admin:${DRONE_COMMIT_BRANCH} -f Dockerfile .
+      - docker push ghcr.io/leds-org/leds-conectafapes-frontend-admin:${DRONE_COMMIT_BRANCH}
+    when:
+      branch:
+        include:
+          - develop
+
+  - name: publish-test
+    image: docker:27.2.0-dind
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+    environment:
+      VITE_API_URL:
+        from_secret: VITE_API_URL
+      VITE_BASE_URL_TEST:
+        from_secret: VITE_BASE_URL_TEST
+      VITE_BASE_URL_AUTH_TEST:
+        from_secret: VITE_BASE_URL_AUTH_TEST
+      GITHUB_USERNAME:
+        from_secret: GITHUB_USERNAME
+      GITHUB_TOKEN:
+        from_secret: GHCR_TOKEN
+    commands:
+      - rm -f .env
+      - echo VITE_API_URL=$VITE_API_URL >> .env
+      - echo VITE_BASE_URL=$VITE_BASE_URL_TEST >> .env
+      - echo VITE_BASE_URL_AUTH=$VITE_BASE_URL_AUTH_TEST >> .env
+      - echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
+      - docker build --cache-from=ghcr.io/leds-org/leds-conectafapes-frontend-admin:${DRONE_COMMIT_BRANCH} -t ghcr.io/leds-org/leds-conectafapes-frontend-admin:${DRONE_COMMIT_BRANCH} -f Dockerfile .
+      - docker push ghcr.io/leds-org/leds-conectafapes-frontend-admin:${DRONE_COMMIT_BRANCH}
+    when:
+      branch:
+        include:
+          - test
+
+  - name: publish-stage
+    image: docker:27.2.0-dind
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+    environment:
+      VITE_API_URL:
+        from_secret: VITE_API_URL
+      VITE_BASE_URL_STAGE:
+        from_secret: VITE_BASE_URL_STAGE
+      VITE_BASE_URL_AUTH_STAGE:
+        from_secret: VITE_BASE_URL_AUTH_STAGE
+      GITHUB_USERNAME:
+        from_secret: GITHUB_USERNAME
+      GITHUB_TOKEN:
+        from_secret: GHCR_TOKEN
+    commands:
+      - rm -f .env
+      - echo VITE_API_URL=$VITE_API_URL >> .env
+      - echo VITE_BASE_URL=$VITE_BASE_URL_STAGE >> .env
+      - echo VITE_BASE_URL_AUTH=$VITE_BASE_URL_AUTH_STAGE >> .env
+      - echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
+      - docker build --cache-from=ghcr.io/leds-org/leds-conectafapes-frontend-admin:stage -t ghcr.io/leds-org/leds-conectafapes-frontend-admin:stage -f Dockerfile .
+      - docker push ghcr.io/leds-org/leds-conectafapes-frontend-admin:stage
+    when:
+      branch:
+        include:
+          - main
+
+depends_on:
+  - Checks
+
+services:
+  - name: dind
+    image: docker:27.1-dind
+    privileged: true
+
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+
+trigger:
+  branch:
+    - develop
+    - test
+    - main
+  event:
+    - push
+
+---
+
+kind: pipeline
+type: docker
+name: Deploy
+
+steps:
+  - name: deploy-develop
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        from_secret: SERVER_HOST
+      username:
+        from_secret: SERVER_USER
+      key:
+        from_secret: SSH_KEY
+      port: 22
+      script:
+        - cd /home/leds_admin/frontend-admin
+        - ls
+        - sudo -n docker compose pull frontend-admin
+        - sudo -n docker compose up -d --no-deps frontend-admin
+    when:
+      branch:
+        include:
+          - develop
+  
+  - name: deploy-test
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        from_secret: SERVER_HOST_TEST
+      username:
+        from_secret: SERVER_USER_TEST
+      key:
+        from_secret: SSH_KEY
+      port: 22
+      script:
+        - cd /home/leds_admin/frontend-admin
+        - sudo -n docker compose pull frontend-admin
+        - sudo -n docker compose up -d --no-deps frontend-admin
+    when:
+      branch:
+        include:
+          - test
+  
+  - name: deploy-stage
+    image: appleboy/drone-ssh
+    settings:
+      host:
+        from_secret: SERVER_HOST_STAGE
+      username:
+        from_secret: SERVER_USER_STAGE
+      key:
+        from_secret: SSH_KEY
+      port: 22
+      script:
+        - cd /home/leds_admin/frontend-admin
+        - sudo -n docker compose pull frontend-admin
+        - sudo -n docker compose up -d --no-deps frontend-admin
+    when:
+      branch:
+        include:
+          - main
+
+services:
+  - name: dind
+    image: docker:27.1-dind
+    privileged: true
+
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+
+depends_on:
+  - Publish
+
+trigger:
+  branch:
+    - develop
+    - main
+    - test
+  event:
+    - push
+
+---
+  
+kind: pipeline
+type: docker
+name: Discord Failure Notification
+
+steps:
+  - name: notify-discord
+    image: appleboy/drone-discord
+    settings:
+      webhook_id:
+        from_secret: discord_webhook_id
+      webhook_token:
+        from_secret: discord_webhook_token
+      username: Pipeline Failed - Drone CI
+      avatar_url: https://i.imgur.com/xwnDh4a.png
+      message: |
+        ## :rotating_light: Oi! A Pipeline do Drone CI da ${DRONE_COMMIT_BRANCH} falhou na etapa de **${DRONE_FAILED_STAGES}**!
+
+        > **Autor**: ${DRONE_COMMIT_AUTHOR} (${DRONE_COMMIT_AUTHOR_NAME})
+        > **Mensagem**: ${DRONE_COMMIT_MESSAGE}
+        > **Branch**: ${DRONE_COMMIT_BRANCH}
+        > **Commit**: [${DRONE_COMMIT_SHA}](${DRONE_COMMIT_LINK})
+        > **Erro na etapa**: ${DRONE_FAILED_STAGES}
+
+        Se o erro for no SonarQube (step checks): [Frontend SonarQube](https://services.leds.dev.br/dashboard?id=leds-org_leds-conectafapes-frontend-admin_2eeaa5a0-4766-4968-86a4-8a80bf00de8c)
+
+        Verifiquem o erro e corrijam o commit! :pray:
+
+depends_on:
+  - Build
+  - Checks
+  - Publish
+  - Deploy
+
+trigger:
+  status:
+    - failure
+  event:
+    - push
+  branch:
+    - develop
+    - test
+    - enable-buildbreak
+
+---
+
+kind: pipeline
+type: docker
+name: Discord Success Notification
+
+# Envia avisos no discord.
+
+steps:
+  - name: notify-discord-success
+    image: appleboy/drone-discord
+    settings:
+      webhook_id:
+        from_secret: discord_webhook_id
+      webhook_token:
+        from_secret: discord_webhook_token
+      username: Pipeline Success (Image Deployed) - Drone CI
+      avatar_url: https://i.imgur.com/ZfNDvTW.png
+      message: |
+        ## :rotating_light: Uma nova imagem foi publicada e o seu deploy foi feito com sucesso no ambiente ${DRONE_COMMIT_BRANCH}ing!
+
+        > **Autor**: ${DRONE_COMMIT_AUTHOR} (${DRONE_COMMIT_AUTHOR_NAME})
+        > **Mensagem**: ${DRONE_COMMIT_MESSAGE}
+        > **Branch**: ${DRONE_COMMIT_BRANCH}
+        > **Commit**: [${DRONE_COMMIT_SHA}](${DRONE_COMMIT_LINK})
+
+        Acesse o ambiente: [Acesse o ambiente ${DRONE_COMMIT_BRANCH}ing](https://${DRONE_COMMIT_BRANCH}ing.conectafapes.leds.dev.br)
+
+depends_on:
+  - Build
+  - Checks
+  - Publish
+  - Deploy
+
+trigger:
+  event:
+    - push
+  branch:
+    - develop
+    - test
+  status:
+    - success
+
+# --- 
+
+# kind: pipeline
+# type: docker
+# name: Lhci
+
+# steps:
+#   - name: lhci run 
+#     image: cypress/browsers:node-20.17.0-chrome-128.0.6613.137-1-ff-130.0.1-edge-128.0.2739.67-1
+#     environment:
+#       LHCI_SERVER_FRONTEND_TOKEN:
+#         from_secret: LHCI_SERVER_FRONTEND_TOKEN
+#       LHCI_GITHUB_APP_TOKEN:
+#         from_secret: LHCI_GITHUB_APP_TOKEN
+#       LHCI_SERVER_URL:
+#         from_secret: LHCI_SERVER_URL
+#     commands:
+#       - npm install -g @lhci/cli
+#       - |
+#         cat <<EOF > .lighthouserc.json
+#         {
+#           "ci": {
+#             "collect": {
+#               "url": [
+#                 "https://developing.conectafapes.leds.dev.br/login/PaginaInicialLogin", 
+#                 "https://developing.conectafapes.leds.dev.br/modalidade/IndexModalidade",
+#                 "https://developing.conectafapes.leds.dev.br/resolucao/IndexResolucao",
+#                 "https://developing.conectafapes.leds.dev.br/importaredital/IndexImportarEdital",
+#                 "https://developing.conectafapes.leds.dev.br/importaredital/EditaisErro"
+#               ],
+#               "numberOfRuns": 2,
+#               "settings": {
+#                 "chromeFlags": "--no-sandbox --disable-gpu --disable-dev-shm-usage",
+#                 "throttling": {
+#                   "cpuSlowdownMultiplier": 1
+#                 },
+#                 "preset": "desktop"
+#               }
+#             },
+#             "assert": {
+#               "assertions": {
+#                 "categories:performance": ["off", {"minScore": 0.8}],
+#                 "categories:accessibility": ["off", {"minScore": 0.9}],
+#                 "categories:best-practices": ["off", {"minScore": 0.9}],
+#                 "categories:seo": ["off", {"minScore": 0.9}]
+#               }
+#             },
+#             "upload": {
+#             "target": "lhci",
+#             "serverBaseUrl": "http://$LHCI_SERVER_URL",
+#             "token": "$LHCI_SERVER_FRONTEND_TOKEN"
+#             }
+#           }
+#         }
+#         EOF
+#       - lhci autorun --upload.githubToken="$LHCI_GITHUB_APP_TOKEN"
+#       - lhci upload --target=filesystem --outputPath="./manifest.json"
+
+#   - name: post-lhci-comment
+#     image: alpine
+#     environment:
+#       PR_COMMENT_TOKEN:
+#         from_secret: GITHUB_PR_COMMENT_TOKEN
+#     commands:
+#       - apk add --no-cache jq curl bc
+#       - chmod +x ./devops-scripts/lhci-pr-comment.sh
+#       - sed -i 's/PR_COMMENT_TOKEN/$PR_COMMENT_TOKEN/g' ./devops-scripts/lhci-pr-comment.sh
+#       - sed -iAcho que 's/DRONE_REPO_OWNER/${DRONE_REPO_OWNER}/g' ./devops-scripts/lhci-pr-comment.sh
+#       - sed -i 's/DRONE_REPO_NAME/${DRONE_REPO_NAME}/g' ./devops-scripts/lhci-pr-comment.sh
+#       - sed -i 's/DRONE_PULL_REQUEST/${DRONE_PULL_REQUEST}/g' ./devops-scripts/lhci-pr-comment.sh
+#       - ./devops-scripts/lhci-pr-comment.sh
+#     when:
+#       event:
+#         - pull_request
+
+# depends_on:
+#   - Build
+
+# trigger:
+#   branch:
+#     - develop
+#   event: 
+#     - push
+#     - pull_request

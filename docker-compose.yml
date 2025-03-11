@@ -1,0 +1,17 @@
+version: '3'
+services:
+  frontend-admin:
+    image: ghcr.io/leds-org/leds-conectafapes-frontend-admin:develop
+    container_name: frontend-admin
+    environment:
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - /home/crepe/certs:/etc/nginx/certs:ro
+    networks:
+      - conectafapes-develop
+
+networks:
+  conectafapes-develop:
+    external: true

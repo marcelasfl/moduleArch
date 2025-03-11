@@ -1,0 +1,53 @@
+@font-face {
+    font-family: 'Inter';
+    src: url('@/assets/fonts/Inter-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('@/assets/fonts/Inter-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('@/assets/fonts/Inter-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('@/assets/fonts/Inter-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Helvetica';
+    src: url('@/assets/fonts/Helvetica.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Helvetica';
+    src: url('@/assets/fonts/Helvetica-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* 
+Thin ou Hairline = 100
+ExtraLight ou UltraLight = 200
+Light = 300
+Regular ou Normal = 400
+Medium = 500
+SemiBold ou DemiBold = 600
+Bold = 700
+ExtraBold ou UltraBold = 800
+Black ou Heavy = 900
+*/
