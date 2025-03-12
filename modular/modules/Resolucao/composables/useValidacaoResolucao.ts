@@ -20,6 +20,7 @@ const validarNumRastreioEdocs = (num: string) => {
 };
 
 export function useValidacao() {
+  
   return {
     validarNumero,
     validarData,

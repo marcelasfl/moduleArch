@@ -14,7 +14,9 @@ import { router } from './router';
 import { createI18n } from 'vue-i18n';
 import VueScrollTo from 'vue-scrollto';
 // import Vue3EasyDataTable from 'vue3-easy-data-table';
+import { VueQueryPlugin } from '@tanstack/vue-query';
 import 'vue3-easy-data-table/dist/style.css';
+
 const i18n = createI18n({
     locale: 'en',
     silentTranslationWarn: true,
@@ -23,6 +25,7 @@ const i18n = createI18n({
 
 const app = createApp(App);
 app.use(router);
+app.use(VueQueryPlugin);
 // app.component('EasyDataTable', Vue3EasyDataTable);
 app.use(PerfectScrollbarPlugin);
 app.use(createPinia());

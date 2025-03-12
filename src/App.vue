@@ -19,6 +19,7 @@ defineOptions({
   //ao atualizar a página
   mounted() {
     provideServices();
+    
     const checkRefreshToken = async (oldRefreshToken: string) => {
       const { data } = await axios.post<RefreshTokenResponse>(`${import.meta.env.VITE_BASE_URL_AUTH}refreshtoken`, {
         refreshToken: oldRefreshToken

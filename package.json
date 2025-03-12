@@ -16,6 +16,7 @@
         "@fullcalendar/interaction": "6.1.10",
         "@fullcalendar/timegrid": "6.1.10",
         "@fullcalendar/vue3": "6.1.10",
+        "@tanstack/vue-query": "^5.67.3",
         "@tiptap/pm": "2.2.2",
         "@tiptap/starter-kit": "2.2.2",
         "@tiptap/vue-3": "2.2.2",
