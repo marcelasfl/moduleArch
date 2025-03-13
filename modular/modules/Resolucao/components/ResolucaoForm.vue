@@ -2,11 +2,16 @@
   <form @submit.prevent="handleSubmit">
     <v-card elevation="10" rounded="md">
       <v-card-text class="pa-sm-6 pa-3 pb-sm-6 pb-6">
+        <!-- Alerta de validação -->
+        <v-alert v-if="alertMessage" type="warning" class="mb-3" closable>
+          {{ alertMessage }}
+        </v-alert>
+
         <v-row>
           <v-col cols="6">
             <v-label class="font-weight-medium mb-2">Número da resolução *</v-label>
             <VTextField type="number" placeholder="Ex: 123" hide-details v-model.number="form.Numero"
-              data-test="inputNumeroResolucao" />
+            data-test="inputNumeroResolucao" />
           </v-col>
 
           <v-col cols="6">
@@ -17,7 +22,7 @@
 
           <v-col cols="12">
             <v-label class="font-weight-medium mb-2">Ementa *</v-label>
-            <VTextarea auto-grow rows="2" color="primary" row-height="25" shaped hide-detail v-model="form.Ementa"
+            <VTextarea auto-grow rows="2" color="primary" row-height="25" shaped hide-details v-model="form.Ementa"
               @input="atualizaContadorEmenta" data-test="textareaEmenta" :error="!!errors.Ementa"
               :error-messages="errors.Ementa" />
             <v-label class="font-weight-small mt-1" :class="{ 'text-danger': contadorCaracteresEmenta > 500 }">
@@ -55,9 +60,9 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits, defineProps, ref } from 'vue';
-import { useResolucao } from '../composables/useCreateResolucaoPage';
-import { useValidacaoResolucao } from '../composables/useValidacaoResolucao';
+import { defineEmits, defineProps, ref } from "vue";
+import { useResolucao } from "../composables/useCreateResolucaoPage";
+import { useValidacaoResolucao } from "../composables/useValidacaoResolucao";
 
 const { isPending, onSubmit } = useResolucao();
 const resolucaoSchema = useValidacaoResolucao();
@@ -70,7 +75,7 @@ const props = defineProps({
   submitButtonText: String,
 });
 
-const emit = defineEmits(['submitForm', 'navigateBack']);
+const emit = defineEmits(["submitForm", "navigateBack"]);
 
 const contadorCaracteresEmenta = ref(props.form?.Ementa.length || 0);
 
@@ -79,30 +84,40 @@ const atualizaContadorEmenta = () => {
 };
 
 const errors = ref<Record<string, string | undefined>>({});
+const alertMessage = ref(""); // Estado para o alerta de erro
 
 const handleSubmit = async () => {
   errors.value = {};
+  alertMessage.value = "";
 
+  // 🚀 **Validação usando o schema do Zod**
   const result = resolucaoSchema.safeParse(props.form);
 
   if (!result.success) {
+    // **Percorre todos os erros retornados pelo Zod**
+    const errorMessages: string[] = [];
+
     result.error.errors.forEach((err) => {
-      const field = err.path[0];
-      errors.value[field] = err.message;
+      const field = err.path[0]; // Identifica o campo com erro
+      const message = err.message; // Pega a mensagem do Zod
+
+      // **Guarda o erro para exibir no campo correto**
+      errors.value[field] = message;
+      errorMessages.push(`${field}: ${message}`);
     });
 
-    console.error('Erros de validação:', errors.value);
+    // **Exibe um alerta com todas as mensagens juntas**
+    alertMessage.value = errorMessages.join(" | ");
     return;
   }
 
-  console.log('Formulário válido:', props.form);
+  console.log("Formulário válido:", props.form);
 
   try {
     await onSubmit(props.form);
-      emit('submitForm');
-
+    emit("submitForm");
   } catch (error) {
-    console.error('Erro ao salvar:', error);
+    console.error("Erro ao salvar:", error);
   }
 };
 </script>
