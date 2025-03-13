@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from '@tanstack/vue-query';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { resolucaoService } from '../api/services/resolucaoService';
-import { useValidacao } from './useValidacaoResolucao';
+// import { useValidacaoResolucao } from './useValidacaoResolucao';
 
-const { validarNumero, validarData, validarEmenta, validarNumRastreioEdocs } = useValidacao();
+
 
 export function useResolucao() {
     const router = useRouter();
@@ -34,19 +34,6 @@ export function useResolucao() {
 
     const onSubmit = (form: any) => {
         erros.value = [];
-
-        // const numeroErro = validarNumero(form.Numero);
-        // if (numeroErro) erros.value.push(numeroErro);
-
-        // const dataErro = validarData(form.Data);
-        // if (dataErro) erros.value.push(dataErro);
-
-        // const ementaErro = validarEmenta(form.Ementa);
-        // if (ementaErro) erros.value.push(ementaErro);
-
-        // const numRastreioErro = validarNumRastreioEdocs(form.NumRastreioEdocs);
-        // if (numRastreioErro) erros.value.push(numRastreioErro);
-
         if (erros.value.length > 0) {
             console.log('Erros no formulário:', erros.value);
             return;
