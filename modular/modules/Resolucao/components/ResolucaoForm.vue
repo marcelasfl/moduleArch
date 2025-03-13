@@ -90,23 +90,19 @@ const handleSubmit = async () => {
   errors.value = {};
   alertMessage.value = "";
 
-  // 🚀 **Validação usando o schema do Zod**
   const result = resolucaoSchema.safeParse(props.form);
 
   if (!result.success) {
-    // **Percorre todos os erros retornados pelo Zod**
     const errorMessages: string[] = [];
 
     result.error.errors.forEach((err) => {
-      const field = err.path[0]; // Identifica o campo com erro
-      const message = err.message; // Pega a mensagem do Zod
+      const field = err.path[0]; 
+      const message = err.message;
 
-      // **Guarda o erro para exibir no campo correto**
       errors.value[field] = message;
       errorMessages.push(`${field}: ${message}`);
     });
 
-    // **Exibe um alerta com todas as mensagens juntas**
     alertMessage.value = errorMessages.join(" | ");
     return;
   }
