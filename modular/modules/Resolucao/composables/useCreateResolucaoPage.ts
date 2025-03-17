@@ -1,15 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
-import { ref } from 'vue';
+import { inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { resolucaoService } from '../api/services/resolucaoService';
-// import { useValidacaoResolucao } from './useValidacaoResolucao';
-
-
+import { ResolucaoService } from '../api/services/ResolucaoService';
 
 export function useResolucao() {
     const router = useRouter();
     const erros = ref<string[]>([]);
     const queryClient = useQueryClient();
+    const resolucaoService = inject('resolucaoService') as ResolucaoService;
 
     const { mutateAsync, isPending, isError, isSuccess } = useMutation({
         mutationFn: async (form: any) => {
@@ -20,7 +18,7 @@ export function useResolucao() {
                 Data: form.Data,
                 NumRastreioEdocs: form.NumRastreioEdocs
             };
-            return await resolucaoService().save(resolucao);
+            return await resolucaoService.save(resolucao);
         },
         onSuccess: () => {
             console.log('Resolução salva com sucesso');

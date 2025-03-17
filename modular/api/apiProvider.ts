@@ -1,7 +1,8 @@
-import axios, { AxiosError, type AxiosInstance } from 'axios';
-import { provide } from 'vue';
-import { AreaTecnicaService } from '../modules/Dashboard/api/services/dashboardService';
-import { errorFactory } from './factory/ErrorFactory';
+import axios, { AxiosError, type AxiosInstance } from "axios";
+import { provide } from "vue";
+import { ResolucaoService } from "../../modular/modules/Resolucao/api/services/ResolucaoService";
+import { AreaTecnicaService } from "../modules/Dashboard/api/services/dashboardService";
+import { errorFactory } from "./factory/ErrorFactory";
 
 const api: AxiosInstance = axios.create({
   baseURL: (import.meta as any).env.VITE_BASE_URL,
@@ -9,9 +10,9 @@ const api: AxiosInstance = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
@@ -21,13 +22,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    Promise.reject(errorFactory(error.response?.status));
+    return Promise.reject(errorFactory(error.response?.status));
   }
 );
 
 export function provideServices() {
-  provide('api', api);
-  provide('areaTecnicaService', new AreaTecnicaService(api));  
+  provide("api", api);
+  provide("areaTecnicaService", new AreaTecnicaService(api));
+  provide("resolucaoService", new ResolucaoService(api)); 
 }
 
 export default api;
