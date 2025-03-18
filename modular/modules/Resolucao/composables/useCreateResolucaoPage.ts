@@ -9,7 +9,7 @@ export function useResolucao() {
     const queryClient = useQueryClient();
     const resolucaoService = inject('resolucaoService') as ResolucaoService;
 
-    const { mutateAsync, isPending, isError, isSuccess } = useMutation({
+    const { mutateAsync: save, isPending, isError, isSuccess } = useMutation({
         mutationFn: async (form: any) => {
             const resolucao = {
                 Numero: form.Numero,
@@ -37,7 +37,7 @@ export function useResolucao() {
             return;
         }
 
-        mutateAsync(form);
+        save(form);
     };
 
     const navigateBack = () => router.push('/IndexResolucao');
@@ -48,6 +48,7 @@ export function useResolucao() {
         isPending,
         isError,
         isSuccess,
-        erros
+        erros,
+        save
     };
 }

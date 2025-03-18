@@ -57,7 +57,7 @@
         "vue3-perfect-scrollbar": "^2.0.0",
         "vue3-print-nb": "0.1.4",
         "vuedraggable": "2.24.3",
-        "vuetify": "^3.5.3",
+        "vuetify": "^3.5.10",
         "web-vitals": "^4.2.3",
         "yup": "1.3.3",
         "zod": "^3.24.2"

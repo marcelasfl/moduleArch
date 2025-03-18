@@ -2,12 +2,14 @@ import '@mdi/font/css/materialdesignicons.css';
 import { createVuetify } from 'vuetify';
 import * as directives from 'vuetify/directives';
 //DragScroll
-import { VueDraggableNext } from 'vue-draggable-next';
-
 import { BLUE_THEME } from '@/theme/LightTheme';
+import { VueDraggableNext } from 'vue-draggable-next';
+import { VNumberInput } from 'vuetify/labs/VNumberInput';
+
 export default createVuetify({
     components: {
         draggable: VueDraggableNext,
+        VNumberInput
       },
     directives,
 
