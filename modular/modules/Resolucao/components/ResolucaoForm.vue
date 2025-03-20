@@ -8,18 +8,18 @@
 
          <v-row>
           <v-col cols="6">
-            <v-label class="font-weight-medium mb-2">Número da resolução *</v-label>
+            <v-label class="font-weight-medium mb-2">{{ t('field.numero') }}</v-label>
               <v-number-input v-model.number="numero.value.value" type="number" placeholder="Ex: 123" :error-messages="numero.errorMessage.value"
               />
           </v-col>
 
           <v-col cols="6">
-            <v-label class="font-weight-medium mb-2">Data de publicação *</v-label>
+            <v-label class="font-weight-medium mb-2"> {{ t('field.data') }} </v-label>
               <v-text-field v-model="data.value.value" placeholder="dd/mm/aaaa" type="date" :error-messages="data.errorMessage.value"  />
           </v-col>
 
           <v-col cols="12">
-            <v-label class="font-weight-medium mb-2">Ementa *</v-label>
+            <v-label class="font-weight-medium mb-2"> {{ t('field.ementa') }}</v-label>
               <v-text-field v-model="ementa.value.value" textarea auto-grow rows="2" color="primary" row-height="25" shaped hide-details @input="atualizaContadorEmenta" :error-messages="ementa.errorMessage.value"  />
             <v-label class="font-weight-small mt-1" :class="{ 'text-danger': contadorCaracteresEmenta > 500 }">
               {{ contadorCaracteresEmenta }}/500 caracteres
@@ -27,14 +27,14 @@
           </v-col>
 
           <v-col cols="12">
-            <v-label class="font-weight-medium mb-2">Link da publicação *</v-label>
+            <v-label class="font-weight-medium mb-2"> {{ t('field.link') }}</v-label>
               <v-text-field  v-model="link.value.value"  type="text" placeholder="https://fapes.es.gov.br/..."  
               :error-messages="link.errorMessage.value"
               />
           </v-col>
 
           <v-col cols="6">
-            <v-label class="font-weight-medium mb-2">Número do E-Docs *</v-label>
+            <v-label class="font-weight-medium mb-2"> {{ t('field.edocs') }}</v-label>
               <v-text-field v-model="numRastreio.value.value" type="text" placeholder="EX: WTC-10192" hide-details :error-messages="numRastreio.errorMessage.value" />
             <v-label class="font-weight-small mt-1">Registre o número do E-Docs da Resolução.</v-label>
           </v-col>
@@ -57,20 +57,21 @@
 import { toTypedSchema } from '@vee-validate/zod';
 import { useField, useForm } from 'vee-validate';
 import { defineEmits, defineProps, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useResolucao } from '../composables/useCreateResolucaoPage';
 import { resolucaoSchema } from '../composables/useValidacaoResolucao';
 
+const { t } = useI18n()
 const { handleSubmit: handleNativeSubmit, errors } = useForm({
   validationSchema: toTypedSchema(resolucaoSchema),
 
 });
-const { isPending,save } = useResolucao();
+const { isPending, save } = useResolucao();
 const numero = useField<number>('Numero');
 const data = useField('Data');
 const ementa = useField('Ementa');
 const link = useField('Link');
 const numRastreio = useField('NumRastreioEdocs');
-
 const props = defineProps({
   form: Object,
   submitButtonText: String,
@@ -84,23 +85,15 @@ const atualizaContadorEmenta = () => {
   contadorCaracteresEmenta.value = props.form?.Ementa.length || 0;
 };
 
-
-console.log('form', errors);
-
-const handleSubmit = handleNativeSubmit((values) => {
-  save(values);
-}, (error) => {
-  alertMessage.value = 'Erro ao salvar resolução';
-  console.error(error);
-});
-
-
+const handleSubmit = handleNativeSubmit(
+  (values) => {
+    save(values)
+  },
+  (error) => {
+    alertMessage.value = t('messages.error')
+    console.error(error)
+  }
+);
 </script>
 
-<style scoped>
-.text-danger {
-  color: red;
-}
 
-
-</style>

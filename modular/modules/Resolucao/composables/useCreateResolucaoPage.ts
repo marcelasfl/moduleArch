@@ -3,6 +3,7 @@ import { inject, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ResolucaoService } from '../api/services/ResolucaoService';
 
+
 export function useResolucao() {
     const router = useRouter();
     const erros = ref<string[]>([]);
@@ -33,7 +34,6 @@ export function useResolucao() {
     const onSubmit = (form: any) => {
         erros.value = [];
         if (erros.value.length > 0) {
-            console.log('Erros no formulário:', erros.value);
             return;
         }
 

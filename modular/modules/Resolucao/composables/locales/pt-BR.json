@@ -1,0 +1,21 @@
+{
+    "buttons": {
+      "save": "Salvar",
+      "cancel": "Cancelar"
+    },
+    "messages": {
+      "success": "Operação realizada com sucesso!",
+      "error": "Erro ao cadastrar. Verifique os campos em branco"
+    },
+    "field": {
+      "numero": "Número da Resolução *",
+      "data": "Data de publicação *",
+      "ementa": "Ementa *",
+      "link": "Link da publicação *",
+      "edocs": "Número do E-Docs *"
+
+    }
+  }
+
+  
+  
