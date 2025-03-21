@@ -1,7 +1,6 @@
 import axios, { AxiosError, type AxiosInstance } from "axios";
 import { provide } from "vue";
 import { ResolucaoService } from "../../modular/modules/Resolucao/api/services/ResolucaoService";
-import { AreaTecnicaService } from "../modules/Dashboard/api/services/dashboardService";
 import { errorFactory } from "./factory/ErrorFactory";
 
 const api: AxiosInstance = axios.create({
@@ -28,7 +27,6 @@ api.interceptors.response.use(
 
 export function provideServices() {
   provide("api", api);
-  provide("areaTecnicaService", new AreaTecnicaService(api));
   provide("resolucaoService", new ResolucaoService(api)); 
 }
 
