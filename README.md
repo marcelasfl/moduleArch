@@ -55,7 +55,7 @@ Os **components** são responsáveis pela **interface visual (UI)**. Eles contê
 Gerencia as **rotas específicas** do módulo. Define os caminhos, parâmetros e redirecionamentos necessários para navegar dentro do módulo.  
 
 **Exemplo de estrutura de rota:**  
-```javascript
+```
 {
   path: '/projetos',
   component: () => import('@/modules/projetos/ProjectsView.vue')
@@ -74,6 +74,7 @@ Os composables armazenam a lógica e as regras de negócio da view. Eles seguem 
 👉 **Dica:** Usar a extensão `.ts` para garantir tipagem e melhorar a manutenção.
 
 ---
+```
 
 ## 5. Services
 
@@ -81,7 +82,7 @@ Os services concentram as chamadas para a API relacionadas ao módulo. Isso gara
 
 ### Exemplo:
 
-```typescript
+```
 import { apiProvider } from '@/global/apiProvider'
 
 export const getUserData = () => {
