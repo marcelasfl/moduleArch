@@ -8,7 +8,7 @@
 
          <v-row>
           <v-col cols="6">
-            <v-label class="font-weight-medium mb-2">{{ t('field.numero') }}</v-label>
+            <v-label class="font-weight-medium mb-2">{{ t('resolution:create.fields.numero') }}</v-label>
               <v-number-input v-model.number="numero.value.value" type="number" placeholder="Ex: 123" :error-messages="numero.errorMessage.value"
               />
           </v-col>

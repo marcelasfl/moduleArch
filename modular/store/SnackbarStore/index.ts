@@ -1,22 +1,29 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-const snackbarStore = defineStore('snackbar', () => {
-  const snackbar = ref(false);
-  const snackbarText = ref('');
-  const snackbarColor = ref('success');
-  const snackbarTimeout = ref(3000);
+export const useSnackbarStore = defineStore('snackbar', () => {
+  const visible = ref(false);
+  const message = ref('');
+  const color = ref('success');
+  const timeout = ref(3000);
 
-  function showSnackbar(text: string, color: string = 'success', timeout: number = 3000) {
-    console.log('snackbar called')
-
-    snackbarText.value = text;
-    snackbarColor.value = color;
-    snackbar.value = true;
-    snackbarTimeout.value = timeout;
+  function show(text: string, options?: { color?: string; timeout?: number }) {
+    message.value = text;
+    color.value = options?.color || 'success';
+    timeout.value = options?.timeout || 3000;
+    visible.value = true;
+  }
+  
+  function hide() {
+    visible.value = false;
   }
 
-  return { snackbar, snackbarText, snackbarColor, showSnackbar, snackbarTimeout };
+  return { 
+    visible, 
+    message, 
+    color, 
+    timeout,
+    show,
+    hide
+  };
 });
-
-export default snackbarStore
