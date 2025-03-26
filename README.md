@@ -60,6 +60,7 @@ Gerencia as **rotas específicas** do módulo. Define os caminhos, parâmetros e
   path: '/projetos',
   component: () => import('@/modules/projetos/ProjectsView.vue')
 }
+```
 ## 4. Composables
 
 Os composables armazenam a lógica e as regras de negócio da view. Eles seguem a filosofia de **"separação de responsabilidades"**, permitindo que a view permaneça limpa e focada na exibição.
@@ -74,7 +75,7 @@ Os composables armazenam a lógica e as regras de negócio da view. Eles seguem 
 👉 **Dica:** Usar a extensão `.ts` para garantir tipagem e melhorar a manutenção.
 
 ---
-```
+
 
 ## 5. Services
 
