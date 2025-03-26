@@ -18,7 +18,9 @@ import VueScrollTo from 'vue-scrollto';
 // import Vue3EasyDataTable from 'vue3-easy-data-table';
 import { VueQueryPlugin } from '@tanstack/vue-query';
 import 'vue3-easy-data-table/dist/style.css';
-
+// Api Provider
+// import { provideApiServices } from './composition/ApiProvider';
+// provideApiServices()
 const i18n = createI18n({
     locale: 'pt',
     silentTranslationWarn: true,

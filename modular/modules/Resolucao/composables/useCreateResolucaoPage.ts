@@ -8,6 +8,9 @@ export function useResolucao() {
     const erros = ref<string[]>([]);
     const queryClient = useQueryClient();
     const resolucaoService = inject('resolucaoService') as ResolucaoService;
+    // const httpClient = useApiClient()
+
+   
 
     const { mutateAsync: save, isPending, isError, isSuccess } = useMutation({
         mutationFn: async (form: any) => {
