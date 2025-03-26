@@ -61,7 +61,7 @@ Gerencia as **rotas específicas** do módulo. Define os caminhos, parâmetros e
   component: () => import('@/modules/projetos/ProjectsView.vue')
 }
 ```
-## 4. Composables
+### 4. Composables
 
 Os composables armazenam a lógica e as regras de negócio da view. Eles seguem a filosofia de **"separação de responsabilidades"**, permitindo que a view permaneça limpa e focada na exibição.
 
@@ -77,7 +77,7 @@ Os composables armazenam a lógica e as regras de negócio da view. Eles seguem 
 ---
 
 
-## 5. Services
+### 5. Services
 
 Os services concentram as chamadas para a API relacionadas ao módulo. Isso garante que a comunicação com o backend fique centralizada e organizada.
 
