@@ -1,3 +1,4 @@
+import type { IEditalDashboard } from "./EditalDashboards";
 type ApiPagination = {
     Total: number;
     TotalPages: number;
@@ -10,8 +11,11 @@ type ApiPaginationResponse<T> = {
 } & ApiPagination
 
 export type IAreaTecnicaDashboard = {
-    Nome: string;
-    Descricao: string;
+    Id: string;
+    Nome?: string;
+    Descricao?: string;
+    Editais?: IEditalDashboard[];
+    AreaTecnicaEditalId?: string;
     
 }
 
