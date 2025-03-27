@@ -1,3 +1,4 @@
+
 {
     "buttons": {
       "save": "Salvar",
@@ -14,7 +15,12 @@
       "link": "Link da publicação *",
       "edocs": "Número do E-Docs *"
 
+    },
+    "description": {
+      "descricao_edocs": "Registre o número do E-Docs da Resolução",
+      "contador": "/500 caracteres"
     }
+    
   }
 
   

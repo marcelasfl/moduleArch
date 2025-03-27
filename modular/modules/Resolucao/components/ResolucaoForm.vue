@@ -8,7 +8,7 @@
 
          <v-row>
           <v-col cols="6">
-            <v-label class="font-weight-medium mb-2">{{ t('resolution:create.fields.numero') }}</v-label>
+            <v-label class="font-weight-medium mb-2">{{ t('field.numero') }}</v-label>
               <v-number-input v-model.number="numero.value.value" type="number" placeholder="Ex: 123" :error-messages="numero.errorMessage.value"
               />
           </v-col>
@@ -22,7 +22,7 @@
             <v-label class="font-weight-medium mb-2"> {{ t('field.ementa') }}</v-label>
               <v-text-field v-model="ementa.value.value" textarea auto-grow rows="2" color="primary" row-height="25" shaped hide-details @input="atualizaContadorEmenta" :error-messages="ementa.errorMessage.value"  />
             <v-label class="font-weight-small mt-1" :class="{ 'text-danger': contadorCaracteresEmenta > 500 }">
-              {{ contadorCaracteresEmenta }}/500 caracteres
+              {{ contadorCaracteresEmenta }} {{ t('description.contador') }}
             </v-label>
           </v-col>
 
@@ -36,7 +36,7 @@
           <v-col cols="6">
             <v-label class="font-weight-medium mb-2"> {{ t('field.edocs') }}</v-label>
               <v-text-field v-model="numRastreio.value.value" type="text" placeholder="EX: WTC-10192" hide-details :error-messages="numRastreio.errorMessage.value" />
-            <v-label class="font-weight-small mt-1">Registre o número do E-Docs da Resolução.</v-label>
+            <v-label class="font-weight-small mt-1">{{ t('description.descricao_edocs') }}.</v-label>
           </v-col>
 
           <v-col cols="12" class="d-flex justify-end">

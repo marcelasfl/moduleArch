@@ -17,5 +17,8 @@ module.exports = {
     "@typescript-eslint/comma-dangle": "off",
     "prettier/prettier": ["error", { endOfLine: "off" }],
     "javascript.validate.enable": false,
+    'no-console': 'error', 
+    'no-debugger': 'error',
   },
 };
+
