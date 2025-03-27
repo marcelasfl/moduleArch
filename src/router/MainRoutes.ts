@@ -41,6 +41,11 @@ const MainRoutes = [{
             component: () => import('../../modular/modules/Resolucao/view/CreateResolucao.vue'),
         },
         {
+            name: 'TabelaBolsistas',
+            path: '/TabelaBolsistas',
+            component: () => import('../../modular/modules/Dashboard/view/TestandoTabela.vue'),
+        },
+        {
             name: 'CadastroResolucao',
             path: '/resolucao/formResolucao/:id?/:modalidade?',
             component: () => import('@/views/conecta-fapes/Resolucao/FormResolucao.vue'),

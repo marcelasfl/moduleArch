@@ -14,7 +14,7 @@
 // import AreaTecnicaController from "@/dashboard/controller/AreaTecnicaController";
 import { storeToRefs } from 'pinia';
 import { inject, ref, watch } from "vue";
-import type { AreaTecnicaService } from '../api/services/dashboardService';
+import type { AreaTecnicaService } from '../api/services/bolsistasProjeto.service';
 import EditalController from "../controller/EditalController";
 import ProjetoController from "../controller/ProjetoController";
 import { useAreaTecnicaSelectStore } from "../controller/store/AreaTecnicaSelectStore";
