@@ -8,7 +8,7 @@ import VueApexCharts from 'vue3-apexcharts';
 import 'vue3-carousel/dist/carousel.css';
 import { PerfectScrollbarPlugin } from 'vue3-perfect-scrollbar';
 import 'vue3-perfect-scrollbar/style.css';
-import messages from '../modular/modules/Resolucao/composables/locales/pt-BR.json';
+import messages from '../modular/modules/Resolucao/i18n/locales/pt-BR.json';
 import App from './App.vue';
 import vuetify from './plugins/vuetify';
 import { router } from './router';

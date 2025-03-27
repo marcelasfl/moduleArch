@@ -9,7 +9,7 @@
 
 import axios from "axios";
 import { RouterView } from "vue-router";
-import { provideServices } from '../modular/api/apiProvider';
+import { provideApiServices } from '../modular/api/provider';
 import { AuthStore, type RefreshTokenResponse } from "./composition/AuthStore";
 
 defineOptions({
@@ -18,7 +18,7 @@ defineOptions({
 
   //ao atualizar a página
   mounted() {
-    provideServices();
+    provideApiServices();
     
     const checkRefreshToken = async (oldRefreshToken: string) => {
       const { data } = await axios.post<RefreshTokenResponse>(`${import.meta.env.VITE_BASE_URL_AUTH}refreshtoken`, {

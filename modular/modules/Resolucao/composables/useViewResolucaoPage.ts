@@ -1,9 +1,8 @@
 import { inject, onMounted, ref } from 'vue';
-import type { IResolucao } from '../api/entities/Resolucao';
-import { ResolucaoService } from '../api/services/ResolucaoService';
+import type { IResolucao } from '../api/interface';
+import { resolucaoService } from '../api/factory'; // modular\modules\Resolucao\api\factory.ts
 
 export function useResolucoes() {
-  const resolucaoService = inject('resolucaoService') as ResolucaoService;
 
   const header = ref([
     { title: 'Numero', sortable: false, key: 'Numero' },
@@ -26,7 +25,7 @@ export function useResolucoes() {
     try {
       const response = await resolucaoService.getResolucao();
       console.log('Dados recebidos:', response);
-      resolucoes.value = response?.data?.value || [];
+      resolucoes.value = response?.value || [];
     } catch (error) {
       console.error('Erro ao buscar resoluções:', error);
     }
