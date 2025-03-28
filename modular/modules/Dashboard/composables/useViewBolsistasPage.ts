@@ -20,12 +20,12 @@ export function useBolsistasProjeto() {
     };
 
     const bolsistas = ref<IBolsistasProjetoDashboard[]>([]);
-
+    const filteredBolsistas = ref<IBolsistasProjetoDashboard[]>([]);
     const loadBolsistas = async () => {
         try {
             const response = await bolsistasProjetoService.getBolsistasPorProjetoById('projetoId/c4aba34c-a8ed-4fce-df2a-08dd51b426c8');
-            console.log(response);
             bolsistas.value = response;
+            filteredBolsistas.value = response;
         } catch (error) {
             console.error('Erro ao buscar resoluções:', error);
         }
@@ -59,6 +59,9 @@ export function useBolsistasProjeto() {
     const sortDirection = ref('asc');
 
     function sortTable(key: any) {
+        if (key === 'status' || key === 'actions') {
+            return
+        }
         if (sortKey.value === key) {
             sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
         } else {
@@ -68,7 +71,7 @@ export function useBolsistasProjeto() {
     }
 
     const sortedData = computed(() => {
-        return [...bolsistas.value].sort((a: any, b: any) => {
+        return [...filteredBolsistas.value].sort((a: any, b: any) => {
             let modifier = sortDirection.value === 'asc' ? 1 : -1;
             return a[sortKey.value] > b[sortKey.value] ? modifier : -modifier;
         });
@@ -85,10 +88,10 @@ export function useBolsistasProjeto() {
     });
 
     const totalPages = computed(() => {
-        return Math.ceil(bolsistas.value.length / pageSize.value);
+        return Math.ceil(filteredBolsistas.value.length / pageSize.value);
     });
 
-    // const bolsistaClicado = ref<IBolsistasProjetoDashboard | null>(null);
+    //const bolsistaClicado = ref<IBolsistasProjetoDashboard | null>(null);
     // function abrirDialogBolsista(bolsista: IBolsistasProjetoDashboard) {
     //     bolsistaClicado.value = bolsista;
     //     getPessoa(bolsista.alocacaoBolsistaPessoaId);
@@ -106,6 +109,48 @@ export function useBolsistasProjeto() {
     //         console.error("Erro ao buscar dados:", error);
     //     }
     // }
+
+    const updateSelect = (newValues: string[]) => {
+        if (newValues.length === 0) {
+            select.value = ["Ativas"]; // Força a seleção de "Ativas" se nenhuma opção estiver marcada
+        } else if (newValues.includes("Todas")) {
+            select.value = ["Todas"];
+        } else {
+            select.value = newValues;
+        }
+        searchBolsistas();
+    };
+
+    const search = ref('');
+    const searchBolsistas = async () => {
+        if (search.value){
+            filterBolsistas();
+        } else {
+            updateTable()
+        }
+    };
+    const filterBolsistas = async () => {
+        const searchQuery = search.value.toLowerCase();
+        filteredBolsistas.value = paginatedData.value.filter((item) => {
+            if (select.value.includes("Todas")) {
+                return item.nome.toLowerCase().includes(searchQuery);
+            }
+            return item.nome.toLowerCase().includes(searchQuery) && select.value.includes(getStatus(item.status));
+        });
+    };
+
+    const updateTable = () => {
+        if (select.value.includes("Todas")) {
+            filteredBolsistas.value = bolsistas.value;
+        } else {
+            // Filtra os itens com base nos valores selecionados
+            filteredBolsistas.value = paginatedData.value.filter((item) =>
+                select.value.includes(
+                    getStatus(item.status)
+                )
+            );
+        }
+    }
     onMounted(loadBolsistas);
     return {
         header, 
@@ -117,12 +162,14 @@ export function useBolsistasProjeto() {
         sortKey, 
         sortDirection, 
         sortTable, 
-        sortedData,
         currentPage, 
         pageSize,
         pageSizes,
         paginatedData,
         totalPages,
+        updateSelect,
+        search,
+        searchBolsistas,
     };
 
 }

@@ -9,8 +9,6 @@ import BolsistasTable from '../components/BolsistasTable.vue';
     <h2 class="mb-4 text-xl font-bold">Gerenciamento de Resoluções</h2>
 
     <BolsistasTable />
-
-    <v-divider class="my-6"></v-divider>
   </v-container>
 </template>
 
