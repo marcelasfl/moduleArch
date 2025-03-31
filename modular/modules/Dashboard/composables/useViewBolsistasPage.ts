@@ -70,8 +70,20 @@ export function useBolsistasProjeto() {
         }
     }
 
+    const filteredData = computed(() => {
+        return filteredBolsistas.value
+
+
+        return filteredBolsistas.value.filter(item => {
+          return Object.values(item).some(value =>
+            String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
+          );
+        });
+    });
+
+
     const sortedData = computed(() => {
-        return [...filteredBolsistas.value].sort((a: any, b: any) => {
+        return [...filteredData.value].sort((a: any, b: any) => {
             let modifier = sortDirection.value === 'asc' ? 1 : -1;
             return a[sortKey.value] > b[sortKey.value] ? modifier : -modifier;
         });
@@ -88,7 +100,7 @@ export function useBolsistasProjeto() {
     });
 
     const totalPages = computed(() => {
-        return Math.ceil(filteredBolsistas.value.length / pageSize.value);
+        return Math.ceil(sortedData.value.length / pageSize.value);
     });
 
     //const bolsistaClicado = ref<IBolsistasProjetoDashboard | null>(null);
@@ -121,21 +133,21 @@ export function useBolsistasProjeto() {
         searchBolsistas();
     };
 
-    const search = ref('');
     const searchBolsistas = async () => {
-        if (search.value){
+        if (searchQuery.value){
             filterBolsistas();
         } else {
             updateTable()
         }
     };
+
+
     const filterBolsistas = async () => {
-        const searchQuery = search.value.toLowerCase();
-        filteredBolsistas.value = paginatedData.value.filter((item) => {
+        filteredBolsistas.value = bolsistas.value.filter((item) => {
             if (select.value.includes("Todas")) {
-                return item.nome.toLowerCase().includes(searchQuery);
+                return item.nome.toLowerCase().includes(searchQuery.value.toLowerCase());
             }
-            return item.nome.toLowerCase().includes(searchQuery) && select.value.includes(getStatus(item.status));
+            return item.nome.toLowerCase().includes(searchQuery.value.toLowerCase()) && select.value.includes(getStatus(item.status));
         });
     };
 
@@ -144,13 +156,17 @@ export function useBolsistasProjeto() {
             filteredBolsistas.value = bolsistas.value;
         } else {
             // Filtra os itens com base nos valores selecionados
-            filteredBolsistas.value = paginatedData.value.filter((item) =>
+            filteredBolsistas.value = bolsistas.value.filter((item) =>
                 select.value.includes(
                     getStatus(item.status)
                 )
             );
+            console.log(filteredBolsistas.value, select.value)
         }
     }
+
+    const searchQuery = ref('');
+
     onMounted(loadBolsistas);
     return {
         header, 
@@ -168,8 +184,8 @@ export function useBolsistasProjeto() {
         paginatedData,
         totalPages,
         updateSelect,
-        search,
         searchBolsistas,
+        searchQuery
     };
 
 }

@@ -3,26 +3,28 @@ import dayjs from 'dayjs';
 import { useBolsistasProjeto } from '../composables/useViewBolsistasPage';
 
 const { 
-    header, 
-    bolsistas, 
-    formatCurrency, 
-    getStatus, 
-    items, 
-    select,
-    sortKey,
-    sortDirection,
-    sortTable, 
-    currentPage, 
-    pageSize,
-    pageSizes,
-    paginatedData,
-    totalPages,
-    updateSelect,
-    searchBolsistas
-    } = useBolsistasProjeto();
-    const abrirDialogBolsista = (item: any) => {
-        console.log('Abrir Dialog');
-    }
+  header, 
+  items, 
+  select, 
+  bolsistas, 
+  formatCurrency, 
+  getStatus, 
+  sortKey, 
+  sortDirection, 
+  sortTable, 
+  currentPage, 
+  pageSize,
+  pageSizes,
+  paginatedData,
+  totalPages,
+  updateSelect,
+  searchBolsistas,
+  searchQuery
+} = useBolsistasProjeto();
+
+const abrirDialogBolsista = (item: any) => {
+    console.log('Abrir Dialog');
+}
 </script>
 
 <template>
@@ -41,21 +43,25 @@ const {
     </v-col>
   </v-row> -->
 
-  <v-row>
-    <v-col cols="4">
-      <select 
-        v-model="select"
-        multiple="true"
-        @change="updateSelect(select)"
-        class="h-32 rounded border px-2 ml-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-      >
-        <option v-for="item in items" :key="item" :value="item">
-          {{ item }}
-        </option>
-      </select>
-      <!-- <v-select v-model="select" :items="items" label="Filtrar por Status" outlined dense multiple/> -->
-    </v-col>
-  </v-row>
+  <div class="d-flex align-center justify-end">
+    <select 
+      v-model="select"
+      multiple
+      @change="updateSelect(select)"
+      class="h-32 rounded border px-2 text-sm mr-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+      style="min-width: 120px;"
+    >
+      <option v-for="item in items" :key="item" :value="item">
+        {{ item }}
+      </option>
+    </select>
+    <!-- <v-select v-model="select" :items="items" label="Filtrar por Status" outlined dense multiple/> -->
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Buscar..."
+      />
+  </div>
   <div >
     <div>
       <table>
@@ -142,7 +148,7 @@ const {
         <v-icon small>mdi-chevron-left</v-icon>
       </button>
       
-      <span class="px-2 text-sm">Página {{ currentPage }} de {{ totalPages }}</span>
+      <span class="px-2 text-sm">Página {{ currentPage }} de {{ totalPages? totalPages : 1 }}</span>
       
       <button
         @click="currentPage++"
