@@ -1,5 +1,5 @@
 <template>
-    <Listbox as="div" v-model="selected" multiple @update:model-value="updateSelect">
+    <Listbox as="div" v-model="props.selected" multiple @update:model-value="props.updateSelect">
         <ListboxLabel class="block text-sm/6 font-medium text-gray-900">Status</ListboxLabel>
         <div class="relative mt-2">
         <ListboxButton class="grid w-full grid-cols-1 rounded-md bg-white py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 hover:cursor-pointer">
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { ref } from 'vue'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { ChevronUpDownIcon } from '@heroicons/vue/16/solid'
 import { CheckIcon } from '@heroicons/vue/20/solid'
@@ -38,19 +38,26 @@ const props = defineProps({
     itens: {
         type: Array as () => string[],
         required: true,
-},
+    },
+    updateSelect: {
+        type: Function,
+        required: true,
+    },
+    selected: {
+        type: Array as () => string[],
+        required: true,
+    },
 })
 
-const selected = ref([props.itens[1]]);
 
-const updateSelect = (newValues:  string[]) => {
-    if (newValues.length === 0) {
-        selected.value = ["Ativas"]; // Força a seleção de "Ativas" se nenhuma opção estiver marcada
-    } else if (newValues.includes("Todas")) {
-        selected.value = ["Todas"];
-    } else {
-        selected.value = newValues;
-    }
-}
+// const updateSelect = (newValues:  string[]) => {
+//     if (newValues.length === 0) {
+//         selected.value = ["Ativas"]; // Força a seleção de "Ativas" se nenhuma opção estiver marcada
+//     } else if (newValues.includes("Todas")) {
+//         selected.value = ["Todas"];
+//     } else {
+//         selected.value = newValues;
+//     }
+// }
 
 </script>

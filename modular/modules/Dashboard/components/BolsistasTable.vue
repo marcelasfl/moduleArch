@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs';
 import { useBolsistasProjeto } from '../composables/useViewBolsistasPage';
-import TesteSelect from './TesteSelect.vue';
+import StatusSelect from './StatusSelect.vue';
 
 const { 
   header, 
@@ -58,7 +58,7 @@ const abrirDialogBolsista = (item: any) => {
       </option>
     </select> -->
     
-    <TesteSelect :itens="items"/>
+    <StatusSelect :itens="items" :updateSelect="updateSelect" :selected="select"/>
     <!-- <v-select v-model="select" :items="items" label="Filtrar por Status" outlined dense multiple/> -->
       <input
         v-model="searchQuery"

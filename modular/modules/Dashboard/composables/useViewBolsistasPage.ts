@@ -161,7 +161,6 @@ export function useBolsistasProjeto() {
                     getStatus(item.status)
                 )
             );
-            console.log(filteredBolsistas.value, select.value)
         }
     }
 
