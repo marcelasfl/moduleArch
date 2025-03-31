@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs';
 import { useBolsistasProjeto } from '../composables/useViewBolsistasPage';
+import TesteSelect from './TesteSelect.vue';
 
 const { 
   header, 
@@ -42,9 +43,10 @@ const abrirDialogBolsista = (item: any) => {
       </v-btn>
     </v-col>
   </v-row> -->
+  
 
   <div class="d-flex align-center justify-end">
-    <select 
+    <!-- <select 
       v-model="select"
       multiple
       @change="updateSelect(select)"
@@ -54,7 +56,9 @@ const abrirDialogBolsista = (item: any) => {
       <option v-for="item in items" :key="item" :value="item">
         {{ item }}
       </option>
-    </select>
+    </select> -->
+    
+    <TesteSelect :itens="items"/>
     <!-- <v-select v-model="select" :items="items" label="Filtrar por Status" outlined dense multiple/> -->
       <input
         v-model="searchQuery"
@@ -71,7 +75,11 @@ const abrirDialogBolsista = (item: any) => {
                 v-for="(header, index) in header"
                 :key="index"
                 @click="sortTable(header.key)"
-                class="px-7 py-3 text-left text-sm font-semibold text-gray-600"
+                :class="{
+                  'px-7 py-3 text-left text-sm font-semibold text-gray-600': true, 
+                  'cursor-default': header.key === 'actions' || header.key === 'status', 
+                  'hover:cursor-pointer': header.key !== 'actions' && header.key !== 'status',
+                }"
               >
                 {{ header.title }}
                 <span v-if="sortKey === header.key" class="ml-1">
