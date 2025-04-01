@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import dayjs from 'dayjs';
 import { useBolsistasProjeto } from '../composables/useViewBolsistasPage';
-import StatusSelect from './StatusSelect.vue';
+import GenericSelect from '../../../components/GenericSelect.vue';
+import StatusTag from './StatusTag.vue';
 
 const { 
   header, 
@@ -58,7 +59,7 @@ const abrirDialogBolsista = (item: any) => {
       </option>
     </select> -->
     
-    <StatusSelect :itens="items" :updateSelect="updateSelect" :selected="select"/>
+    <GenericSelect :itens="items" :updateSelect="updateSelect" :selected="select"/>
     <!-- <v-select v-model="select" :items="items" label="Filtrar por Status" outlined dense multiple/> -->
       <input
         v-model="searchQuery"
@@ -103,15 +104,15 @@ const abrirDialogBolsista = (item: any) => {
                   </a>
               </td>
               <td class="px-7 py-3 text-sm text-gray-700 whitespace-nowrap">
-                <v-chip class="ma-2" size="small" v-if="item.status==5" color="#6FC487" label>ATIVA</v-chip>
-                <v-chip class="ma-2" size="small" v-else-if="item.status==7" color="#BD3B3B" label>CANCELADA</v-chip> 
-                <v-chip class="ma-2" size="small" v-else-if="item.status==6" color="#2B3A8A" label>SUSPENSA</v-chip>
-                <v-chip class="ma-2" size="small" v-else-if="item.status==4" color="#7C85B8" label>EM AVALIAÇÃO</v-chip> 
-                <v-chip class="ma-2" size="small" v-else-if="item.status==8" color="#727793" label>FINALIZADA</v-chip>
-                <v-chip class="ma-2" size="small" v-else-if="item.status==3" color="#7C85B8" label>PENDENTE DE AVALIAÇÃO</v-chip>
-                <v-chip class="ma-2" size="small" v-else-if="item.status==1" color="#7C85B8" label>DOCUMENTAÇÃO PENDENTE</v-chip>
-                <v-chip class="ma-2" size="small" v-else-if="item.status==2" color="#ADBC13" label>AGUARDANDO ACEITES</v-chip>
-                <v-chip class="ma-2" size="small" v-else-if="item.status==0" color="#7C85B8" label>EM EDIÇÃO</v-chip>
+                <StatusTag tag="ATIVA" color="ativa" v-if="item.status==5" />
+                <StatusTag tag="CANCELADA" color="cancelada" v-else-if="item.status==7" />
+                <StatusTag tag="SUSPENSA" color="suspesa" v-else-if="item.status==6" />
+                <StatusTag tag="EM AVALIAÇÃO" color="avaliacao" v-else-if="item.status==4" />
+                <StatusTag tag="FINALIZADA" color="finalizada" v-else-if="item.status==8" />
+                <StatusTag tag="PENDENTE DE AVALIAÇÃO" color="avaliacao" v-else-if="item.status==3" />
+                <StatusTag tag="DOCUMENTAÇÃO PENDENTE" color="avaliacao" v-else-if="item.status==1" />
+                <StatusTag tag="AGUARDANDO ACEITES" color="aguardando" v-else-if="item.status==2" />
+                <StatusTag tag="EM EDIÇÃO" color="avaliacao" v-else-if="item.status==0" />
               </td>
               <td class="px-7 py-3 text-sm font-semibold text-gray-900 whitespace-nowrap">
                 <span>{{ item.siglaBolsa }}</span>

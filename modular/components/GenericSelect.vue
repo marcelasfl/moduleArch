@@ -29,7 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { ChevronUpDownIcon } from '@heroicons/vue/16/solid'
 import { CheckIcon } from '@heroicons/vue/20/solid'
@@ -48,16 +47,4 @@ const props = defineProps({
         required: true,
     },
 })
-
-
-// const updateSelect = (newValues:  string[]) => {
-//     if (newValues.length === 0) {
-//         selected.value = ["Ativas"]; // Força a seleção de "Ativas" se nenhuma opção estiver marcada
-//     } else if (newValues.includes("Todas")) {
-//         selected.value = ["Todas"];
-//     } else {
-//         selected.value = newValues;
-//     }
-// }
-
 </script>
