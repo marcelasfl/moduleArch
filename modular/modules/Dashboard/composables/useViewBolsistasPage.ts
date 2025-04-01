@@ -70,22 +70,15 @@ export function useBolsistasProjeto() {
         }
     }
 
-    const filteredData = computed(() => {
-        return filteredBolsistas.value
-
-
-        return filteredBolsistas.value.filter(item => {
-          return Object.values(item).some(value =>
-            String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
-          );
-        });
-    });
-
-
     const sortedData = computed(() => {
-        return [...filteredData.value].sort((a: any, b: any) => {
+        return [...filteredBolsistas.value].sort((a: any, b: any) => {
             let modifier = sortDirection.value === 'asc' ? 1 : -1;
             return a[sortKey.value] > b[sortKey.value] ? modifier : -modifier;
+        }).filter((item) => {
+            if (select.value.includes("Todas")) {
+                return item.nome.toLowerCase().includes(searchQuery.value.toLowerCase());
+            }
+            return select.value.includes(getStatus(item.status));
         });
     });
 
