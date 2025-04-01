@@ -30,37 +30,8 @@ const abrirDialogBolsista = (item: any) => {
 </script>
 
 <template>
-  <!-- <v-row>
-    <v-col cols="2" class="d-flex justify-start">
-      <v-btn
-        class="custom-width-2"
-        color="primary"
-        variant="flat"
-        dark
-        @click="$router.push('/CreateResolucao')"
-        data-test="buttonIncluirResolucao"
-      >
-        Criar Resolução
-      </v-btn>
-    </v-col>
-  </v-row> -->
-  
-
   <div class="d-flex align-center justify-end">
-    <!-- <select 
-      v-model="select"
-      multiple
-      @change="updateSelect(select)"
-      class="h-32 rounded border px-2 text-sm mr-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-      style="min-width: 120px;"
-    >
-      <option v-for="item in items" :key="item" :value="item">
-        {{ item }}
-      </option>
-    </select> -->
-    
     <GenericSelect :itens="items" :updateSelect="updateSelect" :selected="select"/>
-    <!-- <v-select v-model="select" :items="items" label="Filtrar por Status" outlined dense multiple/> -->
       <input
         v-model="searchQuery"
         type="text"
