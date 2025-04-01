@@ -64,6 +64,7 @@ const abrirDialogBolsista = (item: any) => {
         v-model="searchQuery"
         type="text"
         placeholder="Buscar..."
+        @input="searchBolsistas"
       />
   </div>
   <div >
