@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import dayjs from 'dayjs';
 import { useBolsistasProjeto } from '../composables/useViewBolsistasPage';
 import GenericSelect from '../../../components/GenericSelect.vue';
 import StatusTag from './StatusTag.vue';
+import { statusColor, status } from "../../../utils/statusUtils";
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiPageLast, mdiPageFirst, mdiChevronLeft, mdiChevronRight, mdiEye, mdiArrowUp, mdiArrowDown } from '@mdi/js';
 
 const { 
   header, 
@@ -53,16 +55,14 @@ const abrirDialogBolsista = (item: any) => {
                   'cursor-default': header.key === 'actions' || header.key === 'status', 
                   'hover:cursor-pointer': header.key !== 'actions' && header.key !== 'status',
                 }"
-              >
+              > 
+                <div class="flex items-center">
                 {{ header.title }}
                 <span v-if="sortKey === header.key" class="ml-1">
-                  <v-icon class="me-2" dark v-if="sortDirection === 'asc'">
-                    mdi-arrow-up
-                  </v-icon>
-                  <v-icon class="me-2" dark v-else="sortDirection === 'desc'">
-                    mdi-arrow-down
-                  </v-icon>
+                  <svg-icon class="me-2" :size='20' :path="mdiArrowUp" type="mdi" v-if="sortDirection === 'asc'"></svg-icon>
+                  <svg-icon class="me-2" :size='20' :path="mdiArrowDown" type="mdi" v-else-if="sortDirection === 'desc'"></svg-icon>
                 </span>
+              </div>
               </th>
             </tr>
           </thead>
@@ -75,15 +75,7 @@ const abrirDialogBolsista = (item: any) => {
                   </a>
               </td>
               <td class="px-7 py-3 text-sm text-gray-700 whitespace-nowrap">
-                <StatusTag tag="ATIVA" color="ativa" v-if="item.status==5" />
-                <StatusTag tag="CANCELADA" color="cancelada" v-else-if="item.status==7" />
-                <StatusTag tag="SUSPENSA" color="suspesa" v-else-if="item.status==6" />
-                <StatusTag tag="EM AVALIAÇÃO" color="avaliacao" v-else-if="item.status==4" />
-                <StatusTag tag="FINALIZADA" color="finalizada" v-else-if="item.status==8" />
-                <StatusTag tag="PENDENTE DE AVALIAÇÃO" color="avaliacao" v-else-if="item.status==3" />
-                <StatusTag tag="DOCUMENTAÇÃO PENDENTE" color="avaliacao" v-else-if="item.status==1" />
-                <StatusTag tag="AGUARDANDO ACEITES" color="aguardando" v-else-if="item.status==2" />
-                <StatusTag tag="EM EDIÇÃO" color="avaliacao" v-else-if="item.status==0" />
+                <StatusTag :tag="status[item.status]" :color="statusColor[item.status]"/>
               </td>
               <td class="px-7 py-3 text-sm font-semibold text-gray-900 whitespace-nowrap">
                 <span>{{ item.siglaBolsa }}</span>
@@ -92,14 +84,13 @@ const abrirDialogBolsista = (item: any) => {
               <td class="px-7 py-3 text-sm text-gray-700 whitespace-nowrap">{{ item.cotasAPagar }}</td>
               <td class="px-7 py-3 text-sm text-gray-700 whitespace-nowrap">{{ item.valorBolsa }}</td>
               <td class="px-7 py-3 text-sm text-gray-700 whitespace-nowrap">
-                <v-icon class="me-2" color="primary" dark @click.prevent="abrirDialogBolsista(item)"
-                  >mdi-eye</v-icon>
+                <svg-icon class="me-2" style="color: #2B3A8A" :size='22' :path="mdiEye" type="mdi" dark @click.prevent="abrirDialogBolsista(item)"></svg-icon>
               </td>
             </tr>
           </tbody>
       </table>
     </div>
-    <div class="mt-4 text-right">
+    <div class="mt-4 text-right flex items-center justify-end">
       <span class="whitespace-nowrap text-sm">Itens por página</span>
       <select 
         v-model="pageSize"
@@ -115,9 +106,7 @@ const abrirDialogBolsista = (item: any) => {
         @click="currentPage = 1"  
         class="h-8 w-8 rounded hover:bg-gray-100 disabled:opacity-50 ml-6"
       >
-        <v-icon small>
-          mdi-page-first
-        </v-icon>
+        <svg-icon class="mb-1" :path="mdiPageFirst" type="mdi"></svg-icon>
       </button>
       
       
@@ -126,7 +115,7 @@ const abrirDialogBolsista = (item: any) => {
         :disabled="currentPage === 1"
         class="h-8 w-8 rounded hover:bg-gray-100 disabled:opacity-50"
       >
-        <v-icon small>mdi-chevron-left</v-icon>
+        <svg-icon class="mb-1" :path="mdiChevronLeft" type="mdi"></svg-icon>
       </button>
       
       <span class="px-2 text-sm">Página {{ currentPage }} de {{ totalPages? totalPages : 1 }}</span>
@@ -136,7 +125,8 @@ const abrirDialogBolsista = (item: any) => {
         :disabled="currentPage === totalPages"
         class="h-8 w-8 rounded hover:bg-gray-100 disabled:opacity-50"
       >
-        <v-icon small>mdi-chevron-right</v-icon>
+        
+        <svg-icon class="mb-1" :path="mdiChevronRight" type="mdi"></svg-icon>
       </button>
       
       <button
@@ -144,11 +134,7 @@ const abrirDialogBolsista = (item: any) => {
         :disabled="currentPage === totalPages"
         class="h-8 w-8 rounded hover:bg-gray-100 disabled:opacity-50"
       >
-        <v-icon 
-          small
-        >
-          mdi-page-last
-        </v-icon>
+        <svg-icon class="mb-1" :path="mdiPageLast" type="mdi"></svg-icon>
       </button>
       
     </div>

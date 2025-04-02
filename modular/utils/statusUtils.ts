@@ -1,0 +1,2 @@
+export const status = ["EM EDIÇÃO", "DOCUMENTAÇÃO PENDENTE", "AGUARDANDO ACEITES", "PENDENTE DE AVALIAÇÃO", "EM AVALIAÇÃO", "ATIVA", "SUSPENSA", "CANCELADA", "FINALIZADA"];
+export const statusColor = ["avaliacao", "avaliacao", "aguardando", "avalaiacao", "avaliacao", "ativa", "suspensa", "cancelada", "finalizada"];

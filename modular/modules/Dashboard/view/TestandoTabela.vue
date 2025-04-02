@@ -6,7 +6,7 @@ import BolsistasTable from '../components/BolsistasTable.vue';
 
 <template>
   <v-container>
-    <h2 class="mb-4 text-xl font-bold">Gerenciamento de Resoluções</h2>
+    <h2 class="mb-4 text-xl font-bold">Bolsistas no Projeto</h2>
 
     <BolsistasTable />
   </v-container>

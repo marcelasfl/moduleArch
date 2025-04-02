@@ -18,6 +18,8 @@
         "@fullcalendar/vue3": "6.1.10",
         "@headlessui/vue": "^1.7.23",
         "@heroicons/vue": "^2.2.0",
+        "@jamescoyle/vue-icon": "^0.1.2",
+        "@mdi/js": "^7.4.47",
         "@tailwindcss/postcss": "^4.0.17",
         "@tanstack/vue-query": "^5.67.3",
         "@tiptap/pm": "2.2.2",
