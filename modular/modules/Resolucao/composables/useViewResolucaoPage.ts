@@ -11,8 +11,8 @@ export function useResolucoes() {
     { title: 'Ações', sortable: false, key: 'actions' }
   ]);
 
-  const filterType = ref('');
-  const filterTypes = ref(['Número da Resolução', 'Ementa']);
+  const filterType = ref('Escolha o tipo de filtro');
+  const filterTypes = ref(["Escolha o tipo de filtro", 'Número da Resolução', 'Ementa']);
   const searchQuery = ref('');
   const resolucoes = ref<IResolucao[]>([]);
   const filteredResolucoes = ref<IResolucao[]>([]);
@@ -20,7 +20,6 @@ export function useResolucoes() {
   const loadResolucoes = async () => {
     try {
       const response = await resolucaoService.getResolucao();
-      console.log('Dados recebidos:', response);
       resolucoes.value = response?.value || [];
       filteredResolucoes.value = response?.value || [];
     } catch (error) {
@@ -59,15 +58,7 @@ export function useResolucoes() {
       return [...filteredResolucoes.value].sort((a: any, b: any) => {
           let modifier = sortDirection.value === 'asc' ? 1 : -1;
           return a[sortKey.value] > b[sortKey.value] ? modifier : -modifier;
-      }).filter((item) => {
-        if (filterType.value === ""){
-            return item
-        }
-        if (filterType.value === 'Número da Resolução') {
-          return item.Numero == searchQuery.value;
-        }
-        return item.Ementa.toLowerCase().includes(searchQuery.value.toLowerCase());
-      });
+      })
   });
 
   const currentPage = ref(1);

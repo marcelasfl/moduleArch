@@ -4,7 +4,7 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 import { useResolucoes } from '../composables/useViewResolucaoPage';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiPageFirst, mdiPageLast, mdiChevronLeft, mdiChevronRight, mdiArrowUp, mdiArrowDown, mdiEye } from '@mdi/js';
+import { mdiPageFirst, mdiPageLast, mdiChevronLeft, mdiChevronRight, mdiArrowUp, mdiArrowDown, mdiEye, mdiUnfoldMoreHorizontal, mdiCloseCircle  } from '@mdi/js';
 
 const { 
   header, 
@@ -27,34 +27,41 @@ const {
 </script>
 
 <template>
-  <v-row>
-    <v-col cols="2" class="d-flex justify-start">
-      <v-btn
-        class="custom-width-2"
-        color="primary"
-        variant="flat"
-        dark
-        @click="$router.push('/CreateResolucao')"
-        data-test="buttonIncluirResolucao"
-      >
-        Criar Resolução
-      </v-btn>
-    </v-col>
-  </v-row>
-
+  <button
+      class="h-13 rounded ring-1 ring-gray-400 bg-primary w-[203px] text-white"
+      @click="$router.push('/CreateResolucao')"
+      >Criar Resolução
+  </button>
   <div class="flex items-center w-full mt-6 mb-10">
-    <select v-model="filterType" class="h-12 rounded border px-2 ml-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800">
-      <option v-for="option in filterTypes" :value="option">
-        {{ option }}
-      </option>
-    </select>
-    <input
-      v-model="searchQuery"
-      type="text"
-      :placeholder="filterLabel"
-    />
+    <div class="relative w-[317px]">
+      <select 
+        v-model="filterType" 
+        class="h-14 w-full rounded ring-1 ring-gray-400 px-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
+      >
+        <option v-for="option in filterTypes" :value="option">
+          {{ option }}
+        </option>
+      </select>
+      <svg-icon class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" :size='20' :path="mdiUnfoldMoreHorizontal " type="mdi" ></svg-icon>
+    </div>
+    <div class="relative w-[317px] mr-4">
+      <input
+        class="h-14 rounded w-full ring-1 ring-gray-400 px-2 ml-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
+        v-model="searchQuery"
+        type="text"
+        :placeholder="filterLabel"
+      />
+      <svg-icon 
+        class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-500" 
+        :size='25' 
+        :path="mdiCloseCircle" 
+        type="mdi" 
+        v-if="searchQuery"  
+        @click="searchQuery = ''">
+      </svg-icon>
+    </div>
     <button
-      class="border border-gray-300 flex justify-end"
+      class="h-13 rounded ring-1 ring-gray-400 bg-primary w-[176px] text-white px-4 ml-4"
       @click="buscar"
       >Buscar
     </button>
