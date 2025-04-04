@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useBolsistasProjeto } from '../composables/useViewBolsistasPage';
-import GenericSelect from '../../../components/GenericSelect.vue';
+import GenericSelect from '../../../components/GenericMultipleSelect.vue';
 import StatusTag from './StatusTag.vue';
 import { statusColor, status } from "../../../utils/statusUtils";
 import SvgIcon from '@jamescoyle/vue-icon';

@@ -13,13 +13,9 @@ const atualizarResolucoes = (data: IResolucao[]) => {
 </script>
 
 <template>
-  <v-container>
-    <h2 class="mb-4 text-xl font-bold">Gerenciamento de Resoluções</h2>
+  <h2 class="mb-4 text-xl font-bold">Gerenciamento de Resoluções</h2>
 
-    <ResolucaoTable :resolucoes="resolucoes" @loadResolucoes="atualizarResolucoes" />
-
-    <v-divider class="my-6"></v-divider>
-  </v-container>
+  <ResolucaoTable :resolucoes="resolucoes" @loadResolucoes="atualizarResolucoes" />
 </template>
 
 <style scoped>

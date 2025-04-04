@@ -4,7 +4,9 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 import { useResolucoes } from '../composables/useViewResolucaoPage';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiPageFirst, mdiPageLast, mdiChevronLeft, mdiChevronRight, mdiArrowUp, mdiArrowDown, mdiEye, mdiUnfoldMoreHorizontal, mdiCloseCircle  } from '@mdi/js';
+import { mdiPageFirst, mdiPageLast, mdiChevronLeft, mdiChevronRight, mdiArrowUp, mdiArrowDown, mdiLink, mdiUnfoldMoreHorizontal, mdiCloseCircle, mdiPencil, mdiDelete  } from '@mdi/js';
+import GenericSelect from '../../../components/GenericSelect.vue';
+import GenericInput from '../../../components/GenericInput.vue';
 
 const { 
   header, 
@@ -33,40 +35,15 @@ const {
       >Criar Resolução
   </button>
   <div class="flex items-center w-full mt-6 mb-10">
-    <div class="relative w-[317px]">
-      <select 
-        v-model="filterType" 
-        class="h-14 w-full rounded ring-1 ring-gray-400 px-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
-      >
-        <option v-for="option in filterTypes" :value="option">
-          {{ option }}
-        </option>
-      </select>
-      <svg-icon class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" :size='20' :path="mdiUnfoldMoreHorizontal " type="mdi" ></svg-icon>
-    </div>
-    <div class="relative w-[317px] mr-4">
-      <input
-        class="h-14 rounded w-full ring-1 ring-gray-400 px-2 ml-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
-        v-model="searchQuery"
-        type="text"
-        :placeholder="filterLabel"
-      />
-      <svg-icon 
-        class="absolute right-1 top-1/2 -translate-y-1/2 text-gray-500" 
-        :size='25' 
-        :path="mdiCloseCircle" 
-        type="mdi" 
-        v-if="searchQuery"  
-        @click="searchQuery = ''">
-      </svg-icon>
-    </div>
+    <GenericSelect class="relative w-[317px]" :height="'h-14'" :options="filterTypes" v-model="filterType"/>
+    <GenericInput class="relative w-[317px] mr-4" :height="'h-14'" v-model="searchQuery" :placeholder="filterLabel" />
     <button
       class="h-13 rounded ring-1 ring-gray-400 bg-primary w-[176px] text-white px-4 ml-4"
       @click="buscar"
       >Buscar
     </button>
   </div>
-  <div >
+  <div class="border rounded pb-2">
     <div class="w-full">
       <table class="w-full">
           <thead>
@@ -99,28 +76,22 @@ const {
                     {{ item.Numero }}
                 </a>
               </td>
-              <td class="px-7 py-3 text-sm font-semibold text-gray-900 whitespace-nowrap max-w-[800px]">
+              <td class="px-7 py-3 text-sm font-semibold text-gray-900 max-w-[800px]">
                 <span>{{ item.Ementa }}</span>
               </td>
               <td class="px-7 py-3 text-sm text-gray-700 whitespace-nowrap">{{ dayjs.utc(item.Data).format('DD/MM/YYYY')  }}</td>
-              <td class="px-7 py-3 text-sm text-gray-700 whitespace-nowrap">
-                <svg-icon class="me-2" style="color: #2B3A8A" :size='22' :path="mdiEye" type="mdi" dark @click.prevent="abrirDialogBolsista(item)"></svg-icon>
+              <td class="px-7 py-3 flex items-center">
+                <svg-icon class="mr-2 cursor-pointer" style="color: #2B3A8A" :size='20' :path="mdiLink" type="mdi" dark></svg-icon>
+                <svg-icon class="mr-2 cursor-pointer" style="color: #2B3A8A" :size='20' :path="mdiPencil" type="mdi" dark></svg-icon>
+                <svg-icon class="cursor-pointer" style="color: #AE1212" :size='20' :path="mdiDelete" type="mdi" dark></svg-icon>
               </td>
             </tr>
           </tbody>
       </table>
     </div>
     <div class="mt-4 text-right flex items-center justify-end">
-      <span class="whitespace-nowrap text-sm">Itens por página</span>
-      <select 
-        v-model="pageSize"
-        class="h-8 rounded border px-2 ml-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-      >
-        <option v-for="size in pageSizes" :key="size" :value="size">
-          {{ size }}
-        </option>
-      </select>
-
+      <span class="whitespace-nowrap text-sm mr-2">Itens por página: </span>
+      <GenericSelect class="relative w-[60px] mr-4" :height="'h-8'" :options="pageSizes" v-model="pageSize"/>
       <button 
         :disabled="currentPage === 1"
         @click="currentPage = 1"  
